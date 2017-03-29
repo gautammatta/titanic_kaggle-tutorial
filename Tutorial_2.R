@@ -154,8 +154,10 @@ fancyRpartPlot(fit)
 
 Prediction <- predict(fit, test_df, type = "class")
 
-submit <- data.frame(PassengerId= test_df$PassengerId, Survived = Prediction)
-write.csv(submit, file = "myfirstdtree.csv", row.names = FALSE)
+
+#Export it to excel  
+#submit <- data.frame(PassengerId= test_df$PassengerId, Survived = Prediction)
+#write.csv(submit, file = "myfirstdtree.csv", row.names = FALSE)
 
 
 
@@ -213,6 +215,5 @@ combi$Title <- sapply(combi$Name, FUN = function(x) {strsplit(x,split= '[,.]')[[
 # We can now strip off those spaces from the beginning of the titles 
 
 combi$Title <- sub(" ", "", combi$Title)
-
 
 table(combi$Title)
