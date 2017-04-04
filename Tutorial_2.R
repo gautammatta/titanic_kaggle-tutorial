@@ -6,8 +6,13 @@
 #'         Purpose : To learn Data Science using Kaggle data sets
 #'         
 #'         
-#' Resource used : http://trevorstephens.com/kaggle-titanic-tutorial/r-part-1-booting-up/        
+#' Resource used : http://trevorstephens.com/kaggle-titanic-tutorial/r-part-1-booting-up/     
+#' 
+#'       
 
+install.packages("dplyr")
+install.packages("readr")
+library("dplyr")
 library("readr")
 
 getwd()
@@ -17,6 +22,8 @@ getwd()
 setwd("C:/Users/i0318/Downloads/Titanic DataSet")
 train_df <- read_csv("train.csv")
 test_df <-read_csv("test.csv")
+test_df1 <-read_csv("test.csv")
+### Using the same thing 
 
 # glimpse(train_df)
 # glimpse(test_df)
@@ -142,9 +149,10 @@ fit <-rpart(Survived ~ Sex + Pclass + Age + SibSp+ Parch+ Fare+ Embarked,
 plot(fit)
 text(fit)
 
-install.packages("rattle")
-install.packages("rpart.plot")
-install.packages("RColorBrewer")
+######## Install the packages (Commenting it out )
+#install.packages("rattle")
+#install.packages("rpart.plot")
+#install.packages("RColorBrewer")
 
 library(rattle)
 library(rpart.plot)
@@ -193,15 +201,17 @@ new.fit <- prp(fit, snip = TRUE)$obj
 
 
 
-
 # Looking at the names of the passenger
 train_df$Name[]
 
-
+glimpse(test_df)
 test_df$Survived <- NA
+test_df$Child <- NA 
+test_df$Fare2 <- NA 
+test_df$Survived    <- as.integer(test_df$Survived)
 # combining both of the train and test data for our analysis
-combi <-rbind(subset(train_df,select = -c(Child,Fare2)),test_df)
-
+combi <-rbind(train_df,test_df)
+combi
 
 # Splitting the names of the person and using it for our analysis
 strsplit(combi$Name[1],split= '[,.]')[[1]][2]
@@ -217,3 +227,31 @@ combi$Title <- sapply(combi$Name, FUN = function(x) {strsplit(x,split= '[,.]')[[
 combi$Title <- sub(" ", "", combi$Title)
 
 table(combi$Title)
+
+## Combine the two title for Mademoiselle and Madame to the former
+combi$Title[combi$Title %in% c('Mme','Mlle')] <- 'Mlle'
+
+
+## some other manipulations for Captain and lady 
+
+combi$Title[combi$Title %in% c('Capt', 'Don', 'Major', 'Sir')] <- 'Sir'
+combi$Title[combi$Title %in% c('Dona', 'Lady', 'the Countess', 'Jonkheer')] <- 'Lady'
+
+## Changing it back to factors 
+
+combi$Title <- factor(combi$Title)
+
+# Combine the Siblings, spouse and Parents into a column named Family Size
+
+combi$FamilySize <- combi$Parch + combi$SibSp + 1 
+
+# Find the last name of the person 
+
+combi$Surname <- sapply(combi$Name, FUN = function(x) {strsplit(x, split = '[,.]')[[1]][1]})
+
+# Converting the Family size into character type so that it can be used as a factor : 
+
+combi$FamilyID <- paste(as.character(combi$FamilySize), combi$Surname, sep= "")
+
+
+
